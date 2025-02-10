@@ -1,8 +1,13 @@
 #root {
   max-width: 1280px;
-  margin: 0 auto;
+  margin: 0 auto;  /* ✅ Centers horizontally */
   padding: 2rem;
   text-align: center;
+
+  display: flex;         /* ✅ Enables centering */
+  justify-content: center; /* ✅ Centers horizontally */
+  align-items: center;   /* ✅ Centers vertically */
+  min-height: 100vh;     /* ✅ Full screen height */
 }
 
 .logo {

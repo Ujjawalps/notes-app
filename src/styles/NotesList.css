@@ -1,0 +1,38 @@
+/* ✅ Wrapper to contain notes properly */
+.notes-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* ✅ Limit the number of visible notes */
+.scrollable-notes {
+  max-height: 400px; /* ✅ Set max height to fit 3-4 notes */
+  overflow-y: auto; /* ✅ Enable scrolling */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 10px;
+}
+
+/* ✅ Ensure individual note-cards do not expand beyond a fixed height */
+.note-card {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+  max-height: 80px; /* ✅ Default collapsed size */
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* ✅ When a note is expanded */
+.note-card.expanded {
+  max-height: 300px; /* ✅ Expand to show full content */
+  white-space: normal;
+  text-overflow: initial;
+}

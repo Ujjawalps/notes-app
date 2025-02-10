@@ -1,0 +1,71 @@
+/* 🔹 Add Note Form Styling */
+.add-note-form {
+  background: rgba(255, 255, 255, 0.1); /* Glassmorphism Effect */
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+}
+
+/* 🔹 Input & Editor */
+.add-note-form input,
+.add-note-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 16px;
+}
+
+.add-note-form input::placeholder,
+.add-note-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 🔹 TinyMCE Editor */
+.tox-tinymce {
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 5px;
+}
+
+/* 🔹 Buttons */
+.add-note-form button {
+  width: 100%;
+  padding: 12px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.add-note-form button:hover {
+  background: #45a049;
+}
+
+/* 🔹 Cancel Button */
+.add-note-form .cancel-btn {
+  background: #ff4747;
+}
+
+.add-note-form .cancel-btn:hover {
+  background: #d62f2f;
+}
+
+/* 🔹 Button Container for proper spacing */
+.add-note-form .button-container {
+  display: flex;
+  gap: 10px; /* ✅ Adds space between buttons */
+}
+
+/* 🔹 Ensure buttons are same width */
+.add-note-form .button-container button {
+  flex: 1; /* ✅ Makes both buttons equal width */
+}
