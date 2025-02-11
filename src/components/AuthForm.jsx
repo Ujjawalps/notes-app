@@ -4,41 +4,57 @@ import "../styles/AuthForm.css";
 
 const AuthForm = ({ setUser }) => {
   const [email, setEmail] = useState("");
-  const [name, setName] = useState(""); // ✅ Store user's name
+  const [name, setName] = useState(""); 
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
 
   const handleAuth = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
+
     try {
       if (isLogin) {
-        // ✅ Fix function name (was `createEmailSession`)
+        // ✅ Login User
         await account.createEmailPasswordSession(email, password);
       } else {
-        // ✅ Fix: Prevent duplicate user errors by using unique ID
-        const user = await account.create(ID.unique(), email, password, name); 
-        
-        // ✅ Fix: Auto-login after signup
+        // ✅ Sign Up User
+        const newUser = await account.create(ID.unique(), email, password, name);
         await account.createEmailPasswordSession(email, password);
+
+        // ✅ Send Email Verification
+        await account.createVerification(`${window.location.origin}/verify`);
+        setVerificationSent(true);
       }
 
-      // ✅ Fetch user immediately after login/signup
+      // ✅ Get User Data
       const userData = await account.get();
       setUser(userData);
     } catch (error) {
-      if (error.message.includes("already exists")) {
+      if (error.code === 409) {
         setError("This email is already registered. Try logging in.");
       } else {
-        setError("Authentication failed. Please try again.");
+        setError(error.message || "Authentication failed. Please try again.");
       }
       console.error("Auth Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="auth-container">
       <h2>{isLogin ? "Login" : "Sign Up"}</h2>
+      
+      {verificationSent && (
+        <p className="success">
+          ✅ Verification email sent! Please check your inbox.
+        </p>
+      )}
+
       {error && <p className="error">{error}</p>}
       
       <form onSubmit={handleAuth} className="auth-form">
@@ -65,7 +81,9 @@ const AuthForm = ({ setUser }) => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Processing..." : isLogin ? "Login" : "Sign Up"}
+        </button>
       </form>
 
       <button className="toggle-btn" onClick={() => setIsLogin(!isLogin)}>
