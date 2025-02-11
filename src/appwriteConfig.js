@@ -9,8 +9,8 @@ client
 export const account = new Account(client);
 export const databases = new Databases(client);
 export const storage = new Storage(client);
-export const databaseID = "67a85daf0001080a6db7";  
-export const collectionID = "67a85dce00217ec8dca7";  
-export const bucketID = "67a88f7d000050063918";  
+export const databaseID = import.meta.env.VITE_APPWRITE_DATABASE_ID;  
+export const collectionID = import.meta.env.VITE_APPWRITE_COLLECTION_ID;  
+export const bucketID = import.meta.env.VITE_APPWRITE_BUCKET_ID;  
 
 export { ID }; // ✅ Ensure ID is exported
