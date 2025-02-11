@@ -12,29 +12,34 @@ const Notes = ({ user, onLogout }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedNoteId, setExpandedNoteId] = useState(null); // ✅ Add this line
 
-
-
   useEffect(() => {
     const fetchNotes = async () => {
       try {
         const response = await databases.listDocuments(
           databaseID,
           collectionID,
-          [Query.equal("userId", user.$id)] // ✅ Fetch only notes of logged-in user
+          [Query.equal("userId", user.$id)]
         );
+        console.log("Fetched Notes:", response.documents);  // ✅ Debug Log
         setNotes(response.documents);
       } catch (error) {
         console.error("Error fetching notes:", error);
       }
     };
-
+  
     fetchNotes();
-  }, [user]); // ✅ Re-fetch notes when user changes (logout/login)
+  }, [user]); // ✅ Re-fetch notes when user changes
 
+  
   // ✅ Reset Notes on Logout
+  // useEffect(() => {
+  //   return () => setNotes([]); // Clear notes when component unmounts (logout)
+  // }, [onLogout]);
+
   useEffect(() => {
-    return () => setNotes([]); // Clear notes when component unmounts (logout)
-  }, [onLogout]);
+    console.log("Notes in State:", notes);  // ✅ Debugging Log
+  }, [notes]); // ✅ Logs every time notes update
+  
 
   const handleSearch = () => {
     if (searchTerm.length < 3) return; // ✅ Ignore short searches
@@ -64,26 +69,42 @@ const Notes = ({ user, onLogout }) => {
         {/* ✅ Fix: Edit Mode should correctly load the NoteForm */}
         {editMode && editNote ? (
           <NoteForm 
-            user={user}  
-            isEditing={true} 
-            noteId={editNote.$id}  
-            initialTitle={editNote.title}  
-            initialContent={editNote.content}  
-            onSave={(title, content, noteId) => { 
-              setNotes(notes.map(note => 
-                note.$id === noteId ? { ...note, title, content } : note
-              ));
+          user={user}  
+          isEditing={true} 
+          noteId={editNote.$id}  
+          initialTitle={editNote.title}  
+          initialContent={editNote.content}  
+          onSave={async (title, content, noteId) => { 
+            try {
+              await databases.updateDocument(
+                databaseID,
+                collectionID,
+                noteId, 
+                { title, content }
+              );
+              console.log("Note Updated:", title, content);
+              
+              setNotes((prevNotes) =>
+                prevNotes.map(note => 
+                  note.$id === noteId ? { ...note, title, content } : note
+                )
+              );
+              
               setEditMode(false);
               setEditNote(null);
-            }}
-            onCancel={() => setEditMode(false)}
-          />
+            } catch (error) {
+              console.error("Error updating note:", error);
+            }
+          }}
+          onCancel={() => setEditMode(false)}
+        />
+             
         ) : (
           <NoteForm 
             user={user}  
             isEditing={false} 
-            onSave={(title, content, userId) => {
-              setNotes([...notes, { $id: ID.unique(), title, content, userId }]);
+            onSave={(newNote) => {  // ✅ Update state properly
+              setNotes((prevNotes) => [...prevNotes, newNote]); 
             }} 
           />
         )}

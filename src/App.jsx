@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { account } from "./appwriteConfig";
 import AuthForm from "./components/AuthForm";
 import Notes from "./components/Notes";
+import "./App.css";
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -19,6 +21,11 @@ function App() {
 
   return (
     <div>
+      {!user && (
+        <div className="welcome-container">
+          <h1 className="welcome-text">Welcome to Note-App</h1>
+        </div>
+      )}
       {user ? (
         <Notes user={user} onLogout={handleLogout} />
       ) : (
