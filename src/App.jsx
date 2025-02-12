@@ -4,7 +4,7 @@ import { account } from "./appwriteConfig";
 import AuthForm from "./components/AuthForm";
 import Notes from "./components/Notes";
 import VerifyEmail from "./components/VerifyEmail";
-import Verify from "./components/Verify";  // ✅ Import Verify Page
+import Verify from "./components/Verify";  // ✅ Ensure Verify component is imported
 import "./App.css";
 
 function App() {
@@ -23,20 +23,19 @@ function App() {
     setUser(null);
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;  // ✅ Show loading text
 
   return (
     <Router>
-      <div>
-        {!user && (
-          <div className="welcome-container">
-            <h1 className="welcome-text">Welcome to Note-App</h1>
-          </div>
-        )}
-
-        <Routes>
-          <Route path="/" element={
-            user ? (
+      <Routes>
+        <Route path="/" element={
+          <div>
+            {!user && (
+              <div className="welcome-container">
+                <h1 className="welcome-text">Welcome to Note-App</h1>
+              </div>
+            )}
+            {user ? (
               user.emailVerification ? (
                 <Notes user={user} onLogout={handleLogout} />
               ) : (
@@ -44,11 +43,16 @@ function App() {
               )
             ) : (
               <AuthForm setUser={setUser} />
-            )
-          } />
-          <Route path="/verify" element={<Verify />} /> {/* ✅ Fix: Added Verify Page Route */}
-        </Routes>
-      </div>
+            )}
+          </div>
+        } />
+
+        {/* ✅ Add the verification page */}
+        <Route path="/verify" element={<Verify />} />
+
+        {/* ✅ Optional: Catch all unknown routes */}
+        <Route path="*" element={<h2>404 - Page Not Found</h2>} />
+      </Routes>
     </Router>
   );
 }
