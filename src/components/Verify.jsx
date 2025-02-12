@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { account } from "../appwriteConfig";
 import { useNavigate } from "react-router-dom";
 
 const Verify = () => {
   const navigate = useNavigate();
+  const [message, setMessage] = useState("Verifying your email...");
 
   useEffect(() => {
     const verifyUser = async () => {
@@ -14,18 +15,25 @@ const Verify = () => {
 
         if (userId && secret) {
           await account.updateVerification(userId, secret);
-          alert("Email verified successfully!");
-          navigate("/");
+          setMessage("✅ Email verified successfully! Redirecting...");
+          setTimeout(() => navigate("/"), 3000); // Redirect after 3 sec
+        } else {
+          setMessage("⚠️ Invalid verification link!");
         }
       } catch (error) {
         console.error("Verification Error:", error);
+        setMessage("❌ Verification failed. Please try again.");
       }
     };
 
     verifyUser();
   }, [navigate]);
 
-  return <h2>Verifying your email...</h2>;
+  return (
+    <div className="verify-container">
+      <h2>{message}</h2>
+    </div>
+  );
 };
 
 export default Verify;

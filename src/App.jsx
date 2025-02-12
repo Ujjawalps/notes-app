@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { account } from "./appwriteConfig";
 import AuthForm from "./components/AuthForm";
 import Notes from "./components/Notes";
 import VerifyEmail from "./components/VerifyEmail";
+import Verify from "./components/Verify";  // ✅ Import Verify Page
 import "./App.css";
 
 function App() {
@@ -21,26 +23,33 @@ function App() {
     setUser(null);
   };
 
-  if (loading) return <p>Loading...</p>;  // ✅ Show loading text
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <div>
-      {!user && (
-        <div className="welcome-container">
-          <h1 className="welcome-text">Welcome to Note-App</h1>
-        </div>
-      )}
+    <Router>
+      <div>
+        {!user && (
+          <div className="welcome-container">
+            <h1 className="welcome-text">Welcome to Note-App</h1>
+          </div>
+        )}
 
-      {user ? (
-        user.emailVerification ? (
-          <Notes user={user} onLogout={handleLogout} />  // ✅ Verified users see Notes
-        ) : (
-          <VerifyEmail setUser={setUser} />  // 🚨 Unverified users see verification page
-        )
-      ) : (
-        <AuthForm setUser={setUser} />
-      )}
-    </div>
+        <Routes>
+          <Route path="/" element={
+            user ? (
+              user.emailVerification ? (
+                <Notes user={user} onLogout={handleLogout} />
+              ) : (
+                <VerifyEmail setUser={setUser} />
+              )
+            ) : (
+              <AuthForm setUser={setUser} />
+            )
+          } />
+          <Route path="/verify" element={<Verify />} /> {/* ✅ Fix: Added Verify Page Route */}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
