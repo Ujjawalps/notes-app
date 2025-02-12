@@ -11,7 +11,7 @@ const Verify = ({ setUser }) => {
   useEffect(() => {
     const verifyUser = async () => {
       try {
-        const secret = searchParams.get("secret");
+        const secret = searchParams.get("secret"); // ✅ Only use 'secret'
 
         if (!secret) {
           setMessage("⚠️ Invalid verification link.");
@@ -21,18 +21,18 @@ const Verify = ({ setUser }) => {
         console.log("🔍 Received Secret:", secret); // ✅ Debugging log
 
         // ✅ Call Appwrite to verify the email
-        const response = await account.updateVerification(secret);
-        console.log("✅ Verification Response:", response);
+        await account.updateVerification(secret);
+        console.log("✅ Email Verified Successfully!");
 
         setMessage("✅ Email verified successfully! Redirecting...");
 
         // ✅ Fetch updated user data
         const updatedUser = await account.get();
-        console.log("🆕 Updated User:", updatedUser);
+        console.log("🆕 Updated User Data:", updatedUser);
 
         setUser(updatedUser);
 
-        // ✅ Redirect after 3 seconds
+        // ✅ Redirect to home page after 3 seconds
         setTimeout(() => navigate("/"), 3000);
       } catch (err) {
         console.error("❌ Verification Error:", err);
