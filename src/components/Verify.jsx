@@ -9,20 +9,22 @@ const Verify = ({ setUser }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log("✅ Verify Component Loaded");  // 🔹 Log when Verify.jsx is rendered
+
     const verifyUser = async () => {
       try {
-        const secret = searchParams.get("secret"); // ✅ Only use 'secret'
+        const secret = searchParams.get("secret"); // ✅ Extract the secret
+
+        console.log("🔍 Received Secret:", secret); // ✅ Log extracted secret
 
         if (!secret) {
           setMessage("⚠️ Invalid verification link.");
           return;
         }
 
-        console.log("🔍 Received Secret:", secret); // ✅ Debugging log
-
         // ✅ Call Appwrite to verify the email
-        await account.updateVerification(secret);
-        console.log("✅ Email Verified Successfully!");
+        const response = await account.updateVerification(secret);
+        console.log("✅ Email Verified Successfully!", response);
 
         setMessage("✅ Email verified successfully! Redirecting...");
 
