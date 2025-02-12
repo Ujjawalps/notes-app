@@ -1,5 +1,8 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/verify", "destination": "/index.html" }
+  ],
+  "redirects": [
+    { "source": "/verify", "destination": "/verify", "statusCode": 200 }
   ]
 }

@@ -12,10 +12,18 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    account.get()
-      .then((user) => setUser(user))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
+    const fetchUser = async () => {
+      try {
+        const userData = await account.get();
+        setUser(userData);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
   }, []);
 
   const handleLogout = async () => {
@@ -47,8 +55,8 @@ function App() {
           </div>
         } />
 
-        {/* ✅ Add the verification page */}
-        <Route path="/verify" element={<Verify />} />
+        {/* ✅ Handle Email Verification */}
+        <Route path="/verify" element={<Verify setUser={setUser} />} />
 
         {/* ✅ Optional: Catch all unknown routes */}
         <Route path="*" element={<h2>404 - Page Not Found</h2>} />
