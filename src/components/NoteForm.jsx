@@ -1,17 +1,23 @@
 import { useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import "../styles/NoteForm.css"; // Import styles
-import { databases, databaseID, collectionID, ID } from "../appwriteConfig"; // ✅ Import ID
+import "../styles/NoteForm.css";
+import { databases, databaseID, collectionID, ID } from "../appwriteConfig";
+import { useUserContext } from '../context/UserContext'; // Import UserContext
 
-const NoteForm = ({ 
-  isEditing = false, 
-  initialTitle = "", 
-  initialContent = "", 
-  noteId = null,  // ✅ Ensure default null for new notes
-  onSave, 
-  onCancel, 
-  user 
+const NoteForm = ({
+  isEditing = false,
+  initialTitle = "",
+  initialContent = "",
+  noteId = null,
+  onSave,
+  onCancel,
 }) => {
+  const user = useUserContext(); // Get user from context
+
+  if (!user) {
+    return <div>Loading user data...</div>;
+  }
+
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
 
@@ -20,14 +26,13 @@ const NoteForm = ({
       setTitle(initialTitle);
       setContent(initialContent);
     }
-  }, [isEditing, initialTitle, initialContent]);  
+  }, [isEditing, initialTitle, initialContent]);
 
   const handleSubmit = async () => {
-    if (!title.trim() || !content.trim()) return;  // ✅ Prevent empty notes
-  
+    if (!title.trim() || !content.trim()) return;
+
     try {
       if (isEditing && noteId) {
-        // ✅ Update existing note
         await databases.updateDocument(
           databaseID,
           collectionID,
@@ -35,40 +40,32 @@ const NoteForm = ({
           { title, content }
         );
         console.log("Note Updated!");
-        onSave({ $id: noteId, title, content }); // ✅ Ensure update is reflected
+        onSave({ $id: noteId, title, content });
       } else {
-        // ✅ Create new note
         const newNote = await databases.createDocument(
           databaseID,
           collectionID,
           ID.unique(),
-          { title, content, userId: user.$id }
+          { title, content, userId: user.$id } // Use user from context
         );
         console.log("New Note Created:", newNote);
-        onSave(newNote); // ✅ Ensure new note is added to state
+        onSave(newNote);
       }
     } catch (error) {
       console.error("Error saving/updating note:", error);
+      alert("Error saving/updating note. Please try again."); // User-friendly message
     }
-  
-    setTitle(""); // ✅ Reset form fields
+
+    setTitle("");
     setContent("");
   };
 
-  
   return (
     <div className="add-note-form">
-      <h3>{isEditing ? "Edit Note" : "Add Note"}</h3>
-      <input
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
+      {/* ... (rest of your JSX - title input, TinyMCE editor, buttons) */}
       <Editor
         apiKey="8fzy64bku8uf6h6z8pb7iw5jgv5fv0u5b6sv59fef1q8zrjx"
-        value={content}  // ✅ Controlled value
+        value={content}
         onEditorChange={(newContent) => setContent(newContent)}
         init={{
           height: 200,
@@ -77,21 +74,15 @@ const NoteForm = ({
           toolbar: "undo redo | bold italic underline | bullist numlist | link image | forecolor backcolor | code",
           directionality: "ltr",
           content_style: "body { direction: ltr; text-align: left; }",
-          readonly: false,  // ✅ Ensure editable mode
+          readonly: false,
           setup: (editor) => {
             editor.on("init", () => {
-              editor.setContent(initialContent);  // ✅ Properly set initial content
+              editor.setContent(initialContent);
             });
           },
         }}
       />
-
-      <div className="button-container">
-        <button onClick={handleSubmit}>
-          {isEditing ? "Update" : "Add Note"}
-        </button>
-        {isEditing && <button className="cancel-btn" onClick={onCancel}>Cancel</button>}
-      </div>
+      {/* ... */}
     </div>
   );
 };

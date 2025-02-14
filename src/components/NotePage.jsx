@@ -2,8 +2,15 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { databases, databaseID, collectionID } from "../appwriteConfig";
 import { ID } from "appwrite";
+import { useUserContext } from '../context/UserContext'; // Import UserContext
 
-const NotePage = ({ user }) => {
+const NotePage = () => {  // Remove user prop
+  const user = useUserContext(); // Get User from context
+
+  if (!user) {
+    return <div>Loading user data...</div>;
+  }
+
   const { noteId } = useParams();
   const [note, setNote] = useState(null);
   const [error, setError] = useState("");
@@ -16,6 +23,7 @@ const NotePage = ({ user }) => {
       } catch (error) {
         setError("Note not found or access denied.");
         console.error("Error fetching note:", error);
+        alert("Error fetching note. Please try again."); // User-friendly message
       }
     };
 
@@ -29,11 +37,12 @@ const NotePage = ({ user }) => {
       await databases.createDocument(databaseID, collectionID, ID.unique(), {
         title: note.title,
         content: note.content,
-        userId: user.$id, // ✅ Save under current user's account
+        userId: user.$id, // Use user from context
       });
       alert("Note saved to your notes!");
     } catch (error) {
       console.error("Error saving note:", error);
+      alert("Error saving note. Please try again."); // User-friendly message
     }
   };
 
@@ -44,8 +53,7 @@ const NotePage = ({ user }) => {
     <div>
       <h2>{note.title}</h2>
       <p dangerouslySetInnerHTML={{ __html: note.content }}></p>
-      
-      {/* ✅ Show Save Button */}
+
       {user && <button onClick={handleSaveNote}>Save to My Notes</button>}
     </div>
   );
