@@ -20,24 +20,31 @@ const Notes = ({ onLogout }) => { // Remove user prop
   const [expandedNoteId, setExpandedNoteId] = useState(null);
 
   useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const response = await databases.listDocuments(
-          databaseID,
-          collectionID,
-          [Query.equal("userId", user.$id)] // Use user from context
-        );
-        console.log("Fetched Notes:", response.documents);
-        setNotes(response.documents);
-      } catch (error) {
-        console.error("Error fetching notes:", error);
-        alert("Error fetching notes. Please try again later."); // User-friendly message
-      }
-    };
+    if (user && user.$id) { // Check if user and user.$id exist
+      const fetchNotes = async () => {
+        try {
+          const response = await databases.listDocuments(
+            databaseID,
+            collectionID,
+            [Query.equal("userId", user.$id)] 
+          );
+          console.log("Fetched Notes:", response.documents);
+          setNotes(response.documents);
+        } catch (error) {
+          console.error("Error fetching notes:", error);
+          alert("Error fetching notes. Please try again later."); 
+        }
+      };
+  
+      fetchNotes();
+    } else {
+      // Handle the case where the user is not yet loaded, e.g., display a loading message or an empty state
+      console.log("User not yet loaded, skipping fetchNotes");
+      setNotes([]); // Clear any previous notes while loading
+    }
+  }, [user]); // user is in the dependency array
 
-    fetchNotes();
-  }, [user]); // Re-fetch when user changes
-
+  
   useEffect(() => {
     console.log("Notes in State:", notes);
   }, [notes]);
