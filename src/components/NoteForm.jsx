@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import "../styles/NoteForm.css";
 import { databases, databaseID, collectionID, ID } from "../appwriteConfig";
-import { useUserContext } from '../context/UserContext'; // Import UserContext
+import { useUserContext } from '../context/UserContext';
 
 const NoteForm = ({
   isEditing = false,
@@ -12,7 +12,7 @@ const NoteForm = ({
   onSave,
   onCancel,
 }) => {
-  const user = useUserContext(); // Get user from context
+  const user = useUserContext();
 
   if (!user) {
     return <div>Loading user data...</div>;
@@ -46,14 +46,14 @@ const NoteForm = ({
           databaseID,
           collectionID,
           ID.unique(),
-          { title, content, userId: user.$id } // Use user from context
+          { title, content, userId: user.$id }
         );
         console.log("New Note Created:", newNote);
         onSave(newNote);
       }
     } catch (error) {
       console.error("Error saving/updating note:", error);
-      alert("Error saving/updating note. Please try again."); // User-friendly message
+      alert("Error saving/updating note. Please try again.");
     }
 
     setTitle("");
@@ -62,9 +62,16 @@ const NoteForm = ({
 
   return (
     <div className="add-note-form">
-      {/* ... (rest of your JSX - title input, TinyMCE editor, buttons) */}
+      <h3>{isEditing ? "Edit Note" : "Add Note"}</h3>
+      <input
+        type="text"
+        placeholder="Title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        required
+      />
       <Editor
-        apiKey="8fzy64bku8uf6h6z8pb7iw5jgv5fv0u5b6sv59fef1q8zrjx"
+        apiKey="8fzy64bku8uf6h6z8pb7iw5jgv5fv0u5b6sv59fef1q8zrjx" // Replace with your actual API key
         value={content}
         onEditorChange={(newContent) => setContent(newContent)}
         init={{
@@ -82,7 +89,17 @@ const NoteForm = ({
           },
         }}
       />
-      {/* ... */}
+
+      <div className="button-container">
+        <button onClick={handleSubmit}>
+          {isEditing ? "Update" : "Add Note"}
+        </button>
+        {isEditing && (
+          <button className="cancel-btn" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
+      </div>
     </div>
   );
 };

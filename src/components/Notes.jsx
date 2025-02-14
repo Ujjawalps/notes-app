@@ -4,47 +4,45 @@ import NoteForm from "./NoteForm";
 import NotesList from "./NotesList";
 import { ID, Query } from "appwrite";
 import "../styles/Notes.css";
-import { useUserContext } from '../context/UserContext'; // Import UserContext
+import { useUserContext } from '../context/UserContext';
 
-const Notes = ({ onLogout }) => { // Remove user prop
-  const user = useUserContext();  // Get user from context
-
-  if (!user) { // Handle loading state
-    return <div>Loading user data...</div>;
-  }
-
+const Notes = ({ onLogout }) => {
+  const user = useUserContext();
   const [notes, setNotes] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [editNote, setEditNote] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedNoteId, setExpandedNoteId] = useState(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   useEffect(() => {
-    if (user && user.$id) { // Check if user and user.$id exist
+    if (user && user.$id) {
+      setIsLoadingUser(false);
       const fetchNotes = async () => {
         try {
           const response = await databases.listDocuments(
             databaseID,
             collectionID,
-            [Query.equal("userId", user.$id)] 
+            [Query.equal("userId", user.$id)]
           );
           console.log("Fetched Notes:", response.documents);
           setNotes(response.documents);
         } catch (error) {
           console.error("Error fetching notes:", error);
-          alert("Error fetching notes. Please try again later."); 
+          alert("Error fetching notes. Please try again later.");
         }
       };
-  
-      fetchNotes();
-    } else {
-      // Handle the case where the user is not yet loaded, e.g., display a loading message or an empty state
-      console.log("User not yet loaded, skipping fetchNotes");
-      setNotes([]); // Clear any previous notes while loading
-    }
-  }, [user]); // user is in the dependency array
 
-  
+      fetchNotes();
+    } else if (user === null) {
+      setIsLoadingUser(false);
+    } else {
+      console.log("User not yet loaded, skipping fetchNotes");
+      setNotes([]);
+      setIsLoadingUser(true);
+    }
+  }, [user]);
+
   useEffect(() => {
     console.log("Notes in State:", notes);
   }, [notes]);
@@ -59,13 +57,26 @@ const Notes = ({ onLogout }) => { // Remove user prop
     setNotes(filteredNotes);
   };
 
+  if (isLoadingUser) {
+    return <div>Loading your notes...</div>;
+  }
+
   return (
     <div className="notes-page">
-      {/* ... (rest of your JSX - header, search, NoteForm, NotesList) */}
+      <header className="notes-header">
+        <h1>Notes App</h1>
+        <hr />
+        <div className="user-info">
+          <span>Welcome, {user.name ? user.name : user.email}</span>
+          <button className="logout-btn" onClick={onLogout}>Logout</button>
+        </div>
+      </header>
 
-       {editMode && editNote ? (
+      <section className="notes-section">
+        <h2>Notes</h2>
+
+        {editMode && editNote ? (
           <NoteForm
-            user={user} // Pass user to NoteForm
             isEditing={true}
             noteId={editNote.$id}
             initialTitle={editNote.title}
@@ -90,14 +101,13 @@ const Notes = ({ onLogout }) => { // Remove user prop
                 setEditNote(null);
               } catch (error) {
                 console.error("Error updating note:", error);
-                alert("Error updating note. Please try again later."); // User-friendly message
+                alert("Error updating note. Please try again later.");
               }
             }}
             onCancel={() => setEditMode(false)}
           />
         ) : (
           <NoteForm
-            user={user} // Pass user to NoteForm
             isEditing={false}
             onSave={(newNote) => {
               setNotes((prevNotes) => [...prevNotes, newNote]);
@@ -105,8 +115,35 @@ const Notes = ({ onLogout }) => { // Remove user prop
           />
         )}
 
-      {/* ... */}
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search Notes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="search-btn" onClick={() => handleSearch()}>
+            Search
+          </button>
+          <button className="search-btn mobile" onClick={() => handleSearch()}>
+            🔍
+          </button>
+        </div>
 
+        <NotesList
+          notes={notes}
+          onEdit={(note) => {
+            setEditMode(true);
+            setEditNote(note);
+            setExpandedNoteId(null);
+          }}
+          onDelete={(noteId) => {
+            setNotes(notes.filter((note) => note.$id !== noteId));
+          }}
+          expandedNoteId={expandedNoteId}
+          setExpandedNoteId={setExpandedNoteId}
+        />
+      </section>
     </div>
   );
 };
