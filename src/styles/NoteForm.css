@@ -1,71 +1,61 @@
-/* 🔹 Add Note Form Styling */
-.add-note-form {
-  background: rgba(255, 255, 255, 0.1); /* Glassmorphism Effect */
+/* 🔹 Note Form Container */
+.note-form {
+  background-color: #1e1e1e;
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
 }
 
-/* 🔹 Input & Editor */
-.add-note-form input,
-.add-note-form textarea {
+/* 🔹 Heading */
+.note-form h3 {
+  color: #ff79b0;
+  margin-bottom: 10px;
+}
+
+/* 🔹 Input Fields */
+.note-form input {
   width: 100%;
   padding: 12px;
-  margin-bottom: 12px;
-  border: none;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background-color: #2a2a2a;
   color: white;
-  font-size: 16px;
+  box-sizing: border-box;
 }
 
-.add-note-form input::placeholder,
-.add-note-form textarea::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+/* 🔹 Quill Editor Customization */
+.ql-editor {
+  background-color: #222;
+  color: white;
+  min-height: 150px;
+  padding: 10px;
+  border-radius: 5px;
 }
 
-/* 🔹 TinyMCE Editor */
-.tox-tinymce {
-  border-radius: 8px !important;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 5px;
-}
-
-/* 🔹 Buttons */
-.add-note-form button {
+/* 🔹 Submit Button */
+.note-form button {
   width: 100%;
   padding: 12px;
-  background: #4CAF50;
-  color: white;
+  margin-top: 10px;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
 }
 
-.add-note-form button:hover {
-  background: #45a049;
+/* ✅ Add Note Button */
+.note-form button {
+  background-color: #4CAF50; /* Green */
+  color: white;
 }
 
-/* 🔹 Cancel Button */
-.add-note-form .cancel-btn {
-  background: #ff4747;
-}
-
-.add-note-form .cancel-btn:hover {
-  background: #d62f2f;
-}
-
-/* 🔹 Button Container for proper spacing */
-.add-note-form .button-container {
-  display: flex;
-  gap: 10px; /* ✅ Adds space between buttons */
-}
-
-/* 🔹 Ensure buttons are same width */
-.add-note-form .button-container button {
-  flex: 1; /* ✅ Makes both buttons equal width */
+.note-form button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
 }

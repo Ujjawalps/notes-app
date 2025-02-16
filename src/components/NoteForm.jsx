@@ -1,105 +1,118 @@
 import { useState, useEffect } from "react";
-import { Editor } from "@tinymce/tinymce-react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // ✅ Default Quill styles
+import ImageResize from "quill-image-resize-module-react"; // ✅ Correct Image Resize Module
+import { useAuth } from "../context/AuthContext";
+import { addNote, updateNote } from "../firebase/firestore";
 import "../styles/NoteForm.css";
-import { databases, databaseID, collectionID, ID } from "../appwriteConfig";
-import { useUserContext } from '../context/UserContext';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-const NoteForm = ({
-  isEditing = false,
-  initialTitle = "",
-  initialContent = "",
-  noteId = null,
-  onSave,
-  onCancel,
-}) => {
-  const user = useUserContext();
+// ✅ Register Image Resize module
+ReactQuill.Quill.register("modules/imageResize", ImageResize);
 
-  if (!user) {
-    return <div>Loading user data...</div>;
-  }
-
-  const [title, setTitle] = useState(initialTitle);
-  const [content, setContent] = useState(initialContent);
+const NoteForm = ({ isEditing, note, onSave }) => {
+  const { user } = useAuth();
+  const [title, setTitle] = useState(note?.title || "");
+  const [content, setContent] = useState(note?.content || "");
+  const storage = getStorage(); // Initialize Firebase storage
 
   useEffect(() => {
     if (isEditing) {
-      setTitle(initialTitle);
-      setContent(initialContent);
+      setTitle(note?.title || "");
+      setContent(note?.content || "");
     }
-  }, [isEditing, initialTitle, initialContent]);
+  }, [isEditing, note]);
 
+  // ✅ Handle Saving Notes (New or Edit)
   const handleSubmit = async () => {
     if (!title.trim() || !content.trim()) return;
 
-    try {
-      if (isEditing && noteId) {
-        await databases.updateDocument(
-          databaseID,
-          collectionID,
-          noteId,
-          { title, content }
-        );
-        console.log("Note Updated!");
-        onSave({ $id: noteId, title, content });
-      } else {
-        const newNote = await databases.createDocument(
-          databaseID,
-          collectionID,
-          ID.unique(),
-          { title, content, userId: user.$id }
-        );
-        console.log("New Note Created:", newNote);
-        onSave(newNote);
-      }
-    } catch (error) {
-      console.error("Error saving/updating note:", error);
-      alert("Error saving/updating note. Please try again.");
+    if (isEditing) {
+      await updateNote(note.id, title, content);
+    } else {
+      await addNote(title, content, user.uid);
     }
 
     setTitle("");
     setContent("");
+    onSave();
+  };
+
+  // ✅ Handle Image Upload to Firebase
+  const handleImageUpload = async (file) => {
+    return new Promise((resolve, reject) => {
+      const storageRef = ref(storage, `images/${user.uid}/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          console.log(`Upload Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}%`);
+        },
+        (error) => reject(error),
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(downloadURL);
+        }
+      );
+    });
+  };
+
+  // ✅ Handle Image Paste or Upload via Quill
+  const imageHandler = async () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const imageUrl = await handleImageUpload(file);
+      const editor = document.querySelector(".ql-editor");
+
+      // ✅ Ensure images have a default size and new lines before & after
+      const imgTag = `<br><img src="${imageUrl}" alt="Uploaded Image" style="max-width: 250px; height: auto; display: block; margin: 10px auto;"/><br>`;
+
+      editor.innerHTML += imgTag;
+    };
   };
 
   return (
-    <div className="add-note-form">
+    <div className="note-form">
       <h3>{isEditing ? "Edit Note" : "Add Note"}</h3>
       <input
         type="text"
         placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        required
       />
-      <Editor
-        apiKey="8fzy64bku8uf6h6z8pb7iw5jgv5fv0u5b6sv59fef1q8zrjx" // Replace with your actual API key
+
+      {/* ✅ Quill.js Editor with Image Resize */}
+      <ReactQuill
         value={content}
-        onEditorChange={(newContent) => setContent(newContent)}
-        init={{
-          height: 200,
-          menubar: false,
-          plugins: "lists link image table code help wordcount",
-          toolbar: "undo redo | bold italic underline | bullist numlist | link image | forecolor backcolor | code",
-          directionality: "ltr",
-          content_style: "body { direction: ltr; text-align: left; }",
-          readonly: false,
-          setup: (editor) => {
-            editor.on("init", () => {
-              editor.setContent(initialContent);
-            });
+        onChange={setContent}
+        modules={{
+          toolbar: [
+            [{ header: "1" }, { header: "2" }, { font: [] }],
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["bold", "italic", "underline"],
+            [{ color: [] }, { background: [] }],
+            ["link", "image"], // Image Upload Button
+            ["clean"],
+          ],
+          handlers: {
+            image: imageHandler, // Custom Image Upload
+          },
+          imageResize: {
+            parchment: ReactQuill.Quill.import("parchment"),
+            modules: ["Resize", "DisplaySize", "Toolbar"],
           },
         }}
       />
 
-      <div className="button-container">
-        <button onClick={handleSubmit}>
-          {isEditing ? "Update" : "Add Note"}
-        </button>
-        {isEditing && (
-          <button className="cancel-btn" onClick={onCancel}>
-            Cancel
-          </button>
-        )}
-      </div>
+      <button onClick={handleSubmit}>{isEditing ? "Update" : "Add Note"}</button>
     </div>
   );
 };

@@ -1,38 +1,32 @@
-/* 🔹 Welcome Text Container */
-.welcome-container {
-  height: 60px;  /* ✅ Keeps space reserved */
+/* 🔹 Global Dark Theme */
+body {
+  background-color: #121212;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* 🔹 Centered App Container */
+.app-container {
+  width: 100%;
+  max-width: 600px;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  padding: 0; /* ✅ Removes extra background padding */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 20px; /* ✅ Ensures spacing remains */
-  overflow: hidden;
 }
 
-/* 🔹 Welcome Text Effect */
-.welcome-text {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #ffffff;
-  animation: fadeScale 3s infinite ease-in-out;
-}
-
-/* 🔹 Animation: Smooth fade-in and scale-up */
-@keyframes fadeScale {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-}
-
-/* 🔹 Add Margin to Login Container */
-.auth-container {
-  margin-top: 20px; /* ✅ Maintains proper spacing */
+/* 🔹 Footer Spacing */
+footer {
+  height: 50px;
 }

@@ -1,0 +1,107 @@
+/* Notes.css */
+.notes-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #1e1e1e;
+  color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #fff;
+}
+
+button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px 0;
+}
+
+button:hover {
+  background: #218838;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 8px;
+  background: #333;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.note {
+  background: #333;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+
+.note button {
+  background: #dc3545;
+  margin-left: 5px;
+}
+
+.note button:hover {
+  background: #c82333;
+}
+
+.edit-btn {
+  background: #ffc107;
+  color: black;
+}
+
+.edit-btn:hover {
+  background: #e0a800;
+}
+/* 🖤 Dark Mode for the Editor */
+.ql-toolbar {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+}
+
+.ql-container {
+  background-color: #282c34;
+  color: white;
+  border: 1px solid #333;
+}
+
+/* 📝 Set Editor Box Height */
+.ql-editor {
+  min-height: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* 📸 Fix Image Size & Ensure New Line */
+.ql-editor img {
+  max-width: 250px !important;  /* ✅ Force width */
+  height: auto !important;       /* ✅ Maintain aspect ratio */
+  display: block !important;     /* ✅ Ensure it's block-level */
+  margin: 15px auto !important;  /* ✅ Center image */
+}
+
+
+
+/* ✅ Fix Toolbar Icons for Dark Mode */
+.ql-snow .ql-stroke {
+  stroke: white;
+}
+.ql-snow .ql-fill {
+  fill: white;
+}
+
+/* 🏷️ Fix Input Fields */
+.note-input input {
+  background: #333;
+  color: white;
+  border: 1px solid #555;
+}

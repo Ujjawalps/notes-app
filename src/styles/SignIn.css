@@ -1,5 +1,5 @@
-/* 🔹 Auth Form Container */
-.auth-container {
+/* 🔹 Centered Login Form */
+.signin-container {
   background-color: #1e1e1e;
   padding: 20px;
   border-radius: 10px;
@@ -10,13 +10,13 @@
 }
 
 /* 🔹 Heading */
-.auth-container h2 {
+.signin-container h2 {
   color: #ff79b0;
   margin-bottom: 15px;
 }
 
 /* 🔹 Input Fields */
-.auth-container input {
+.signin-container input {
   width: 100%;
   padding: 12px;
   margin: 10px 0;
@@ -27,44 +27,36 @@
   box-sizing: border-box;
 }
 
-/* 🔹 Buttons */
-.auth-container button {
+/* 🔹 Login Button */
+.signin-container button {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
   font-weight: bold;
   transition: all 0.3s ease-in-out;
 }
 
-/* ✅ Login / Sign Up Button */
-.auth-container button[type="submit"] {
-  background-color: #4CAF50; /* Green */
-  color: white;
-}
-
-.auth-container button[type="submit"]:hover {
+.signin-container button:hover {
   background-color: #45a049;
   transform: scale(1.05);
 }
 
-/* ✅ Toggle Button */
-.auth-container button:not([type="submit"]) {
-  background-color: transparent;
+/* 🔹 Sign Up Link */
+.signin-container p {
+  margin-top: 10px;
+}
+
+.signin-container a {
   color: #ff79b0;
-  border: 1px solid #ff79b0;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-.auth-container button:not([type="submit"]):hover {
-  background-color: #ff79b0;
-  color: white;
-}
-
-/* 🔹 Error Message */
-.auth-container .error {
-  color: red;
-  font-size: 14px;
-  margin-bottom: 10px;
+.signin-container a:hover {
+  text-decoration: underline;
 }

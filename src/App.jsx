@@ -1,50 +1,33 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ClerkProvider, SignedIn, SignedOut, SignIn, SignUp, UserButton, useUser } from "@clerk/clerk-react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext"; // Auth Context
 import Notes from "./components/Notes";
-import "./App.css";
-import { UserProvider } from './context/UserContext'; // Import UserProvider
-
-const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+import AuthForm from "./components/AuthForm";
+import "./App.css"; // Ensure dark theme styles are applied
 
 function ProtectedRoute({ children }) {
-  const { isLoaded, isSignedIn } = useUser();
-
-  if (!isLoaded) return <div>Loading authentication...</div>; // Improved loading message
-  if (!isSignedIn) return <SignIn />;
-
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/sign-in" />;
   return children;
 }
 
+
 function App() {
   return (
-    <ClerkProvider publishableKey={clerkKey}>
-      <UserProvider> {/* Wrap with UserProvider */}
-        <Router>
-          <div className="header">
-            <h1>Welcome to Note-App</h1>
-            <SignedIn>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
-          </div>
-
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Notes />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
-
-            <Route path="*" element={<h2>404 - Page Not Found</h2>} />
-          </Routes>
-        </Router>
-      </UserProvider>
-    </ClerkProvider>
+    <div className="app-container"> {/* ✅ Add a wrapper for dark theme */}
+      <Router>
+        <Routes>
+          <Route path="/sign-in" element={<AuthForm />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Notes />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
